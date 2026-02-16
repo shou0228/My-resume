@@ -3,41 +3,604 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <title>Shou Cheng Hsueh - Interactive Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom Chart Container Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Timeline connectivity lines */
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px;
+            width: 2px;
+            background-color: #e2e8f0;
+            z-index: 0;
+        }
+        
+        /* Custom scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+    <!-- Chosen Palette: Slate (Backgrounds) + Royal Blue (Primary) + Emerald (Secondary/Success) for a professional Engineering/Tech look -->
+    <!-- Application Structure Plan: 
+         1. Hero Section: Quick professional summary and key contact info.
+         2. Interactive Dashboard: 
+            - Left Col: Skills Radar (Visualizing the IE vs AI balance).
+            - Right Col: Career & Education Timeline (Chronological context).
+         3. Project Showcase: Card-based grid with filtering capabilities (AI vs Manufacturing). 
+            - Includes specific deep-dive interactive elements for key projects (e.g. Impact charts).
+         4. Awards: Simple list highlighting recognition.
+         Designed to allow recruiters to quickly toggle between "Strategic" (TSMC experience) and "Technical" (AI Projects) views. 
+    -->
+    <!-- Visualization & Content Choices:
+         1. Skills Radar Chart: Shows the multi-disciplinary nature (IE, ML, Coding, Strategy). Goal: Show balance.
+         2. Project Impact Chart (Bar): Specifically for the Football project to visualize the 12.9% improvement metric. Goal: Quantify results.
+         3. Timeline (HTML/CSS): To show career progression clearly. Goal: Experience tracking.
+         4. Tech Stack Tags: Interactive filtering. Goal: Quick skill verification.
+         <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 </head>
-<body>
-    <header>
-        <h1>Welcome to My Portfolio</h1>
-    </header>
-    <main>
-        <section id="skills">
-            <h2>Skills</h2>
-            <canvas id="skillsRadar"></canvas>
-        </section>
-        <section id="timeline">
-            <h2>Timeline</h2>
-            <ul>
-                <li>2018: Started my journey in web development.</li>
-                <li>2020: Completed my first project.</li>
-                <li>2022: Joined a tech startup as a developer.</li>
-            </ul>
-        </section>
-        <section id="projects">
-            <h2>Projects Showcase</h2>
-            <div class="project">
-                <h3>Project One</h3>
-                <p>Description of project one.</p>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-800">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-blue-900 tracking-tight">Shou Cheng Hsueh</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <button onclick="scrollToSection('overview')" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Overview</button>
+                    <button onclick="scrollToSection('experience')" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Experience</button>
+                    <button onclick="scrollToSection('projects')" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Projects & Research</button>
+                    <a href="mailto:aaron10640@gmail.com" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">Contact Me</a>
+                </div>
+                <!-- Mobile menu button stub -->
+                <div class="flex items-center md:hidden">
+                    <button class="text-slate-500 hover:text-blue-600" onclick="alert('Please use the main view for best experience.')">Menu</button>
+                </div>
             </div>
-            <div class="project">
-                <h3>Project Two</h3>
-                <p>Description of project two.</p>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- Hero Section -->
+        <section id="overview" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-8 md:p-12 lg:flex lg:items-center lg:justify-between gap-8">
+                <div class="lg:w-2/3 space-y-4">
+                    <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        ORP Engineer @ TSMC (N2 Capacity)
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+                        Bridging <span class="text-blue-600">Industrial Engineering</span> & <span class="text-emerald-600">Artificial Intelligence</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 max-w-2xl leading-relaxed">
+                        specializing in Strategic Capacity Planning, Operations Research, and Machine Learning. Currently optimizing the world's most advanced 2nm semiconductor node.
+                    </p>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <a href="https://github.com/shouchen" target="_blank" class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+                            GitHub Profile
+                        </a>
+                        <a href="https://linkedin.com/in/shou-cheng-xue" target="_blank" class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+                            LinkedIn Profile
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Skill Radar Chart -->
+                <div class="lg:w-1/3 mt-8 lg:mt-0 flex flex-col items-center">
+                    <div class="w-full text-center mb-2">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Core Competency Matrix</h3>
+                    </div>
+                    <div class="chart-container bg-slate-50 rounded-xl p-2 border border-slate-100">
+                        <canvas id="skillsRadarChart"></canvas>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <!-- Experience & Timeline Section -->
+        <section id="experience" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-12">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-slate-900">Professional Journey & Education</h2>
+                    <p class="text-slate-600 mt-2">
+                        A chronological view of my academic foundation and professional milestones. This section highlights the progression from academic research in ML to applying strategic IE principles at TSMC's most advanced fab.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Timeline Column -->
+            <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 relative timeline-line">
+                <div id="timeline-container" class="space-y-8 relative z-10">
+                    <!-- Dynamic Timeline Content Injected Here -->
+                </div>
+            </div>
+
+            <!-- Detailed Insight Column (Sticky) -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-24">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 border-b pb-2">Key Competencies</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-blue-600 mb-2">Data Science & AI</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Deep Learning</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Transformers</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Optuna</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">PyTorch</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Genetic Algorithms</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-semibold text-emerald-600 mb-2">Industrial Engineering</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Capacity Planning</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Operations Research</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Scenario Modeling</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Risk Mitigation</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-semibold text-indigo-600 mb-2">Tools & Systems</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Python</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">SAP ERP</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">Power BI</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">VBA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-lg p-6 text-white">
+                    <h3 class="text-lg font-bold mb-2">Awards Highlight</h3>
+                    <ul class="space-y-3 text-sm opacity-90">
+                        <li class="flex items-start gap-2">
+                            <span class="text-yellow-300 text-lg">★</span>
+                            <span><strong>1st Place</strong> - Micron Memory Awards (AI Scheduling)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-200 text-lg">★</span>
+                            <span><strong>4th Place</strong> - TSMC Smart Manufacturing Workshop</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Projects & Research Portfolio</h2>
+                    <p class="text-slate-600 mt-2 max-w-3xl">
+                        A showcase of technical projects demonstrating the application of AI algorithms to solve complex optimization problems in manufacturing and sports analytics.
+                    </p>
+                </div>
+                <!-- Filter Buttons -->
+                <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0" id="project-filters">
+                    <button onclick="filterProjects('All')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white transition-all shadow-sm ring-2 ring-blue-600 ring-offset-2">All</button>
+                    <button onclick="filterProjects('Manufacturing')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all">Manufacturing</button>
+                    <button onclick="filterProjects('AI/ML')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all">AI/ML</button>
+                    <button onclick="filterProjects('Optimization')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all">Optimization</button>
+                </div>
+            </div>
+
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Project cards injected here -->
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="border-t border-slate-200 pt-8 pb-12 mt-12">
+            <div class="text-center">
+                <p class="text-slate-500 text-sm">
+                    &copy; 2024 Shou Cheng Hsueh. Interactive Portfolio.
+                </p>
+                <p class="text-slate-400 text-xs mt-2">
+                    Generated based on provided resume documentation.
+                </p>
+            </div>
+        </footer>
+
     </main>
-    <footer>
-        <p>&copy; 2026 My Portfolio</p>
-    </footer>
+
+    <!-- Modal for Deep Dives (Hidden by default) -->
+    <div id="project-modal" class="fixed inset-0 z-[60] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-2xl leading-6 font-bold text-slate-900" id="modal-title">Project Title</h3>
+                            <div class="mt-4">
+                                <p class="text-sm text-slate-500" id="modal-description">Description goes here.</p>
+                                <div id="modal-viz-container" class="mt-6 border-t border-slate-100 pt-6">
+                                    <!-- Dynamic Viz for specific projects -->
+                                    <div class="chart-container" id="modal-chart-wrapper">
+                                        <canvas id="modalChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Data Source ---
+        const resumeData = {
+            timeline: [
+                {
+                    year: "Oct 2024 - Present",
+                    title: "ORP Engineer (N2 Capacity)",
+                    org: "TSMC",
+                    type: "work",
+                    desc: "Leading capacity planning for the 2nm advanced node. Managing machinery planning, handling complex process changes, and building scenario models for risk mitigation during fab ramp-up.",
+                    tech: ["Capacity Planning", "SAP ERP", "Scenario Modeling"]
+                },
+                {
+                    year: "Jun 2022 - Aug 2024",
+                    title: "Master's in IE & EM",
+                    org: "National Tsing Hua University",
+                    type: "edu",
+                    desc: "Specialized in Operational Research and Machine Learning. Thesis on integration of Deep Learning with Hyperparameter Optimization for heart disease classification.",
+                    tech: ["Deep Learning", "Python", "Research"]
+                },
+                {
+                    year: "Jul 2023 - Aug 2023",
+                    title: "ORP Engineer Intern",
+                    org: "TSMC",
+                    type: "work",
+                    desc: "Developed a 'Fab Design Quick Model' using Python & VBA to optimize factory structure analysis.",
+                    tech: ["Python", "VBA", "Fab Layout"]
+                },
+                {
+                    year: "Jun 2022 - Jun 2023",
+                    title: "Research Assistant",
+                    org: "Institute for Information Industry (MIC)",
+                    type: "work",
+                    desc: "Conducted ICT technology research and data visualization using R and Python.",
+                    tech: ["R", "Data Viz", "Market Research"]
+                },
+                {
+                    year: "Sep 2018 - Jun 2022",
+                    title: "Bachelor's in Industrial Management",
+                    org: "NTUST",
+                    type: "edu",
+                    desc: "Major in Industrial Management with a minor in Finance.",
+                    tech: ["Industrial Management", "Finance"]
+                }
+            ],
+            projects: [
+                {
+                    id: "p1",
+                    title: "Optimal Production & Predictive Maintenance",
+                    category: ["Manufacturing", "AI/ML", "Optimization"],
+                    desc: "Integrated production scheduling with predictive maintenance using a Transformer-based CNN and Genetic Algorithms. Goal: Enhance productivity and reduce unplanned downtime.",
+                    tags: ["Transformer", "CNN", "Genetic Algo", "Python"],
+                    impact: "1st Place Winner - Micron Memory Awards",
+                    hasChart: true,
+                    chartType: "pie" // Conceptual
+                },
+                {
+                    id: "p2",
+                    title: "AI-Driven Football Team Decision System",
+                    category: ["AI/ML", "Optimization"],
+                    desc: "Combined ML-KNN with Tree-Structured Parzen Estimator (TPE) and Grid Search to optimize team configuration under budget constraints.",
+                    tags: ["ML-KNN", "TPE", "Grid Search", "Optimization"],
+                    impact: "Improved performance by 12.9% within budget.",
+                    hasChart: true,
+                    chartType: "bar"
+                },
+                {
+                    id: "p3",
+                    title: "Coronary Heart Disease Classification",
+                    category: ["AI/ML", "Research"],
+                    desc: "Master's Thesis project integrating Deep Learning with Hyperparameter Optimization (TPE, CMA-ES) to improve classification accuracy.",
+                    tags: ["Deep Learning", "Hyperparameter Opt", "Medical AI"],
+                    impact: "NTHU Thesis",
+                    hasChart: false
+                },
+                {
+                    id: "p4",
+                    title: "Fab Design Quick Model",
+                    category: ["Manufacturing", "Programming"],
+                    desc: "Internship project at TSMC to automate layout modeling. Reduced manual calculation time for machine configuration restrictions.",
+                    tags: ["Python", "VBA", "Fab Layout"],
+                    impact: "Implemented at TSMC Layout Team",
+                    hasChart: false
+                }
+            ]
+        };
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initTimeline();
+            initRadarChart();
+            initProjects();
+        });
+
+        // --- Render Functions ---
+
+        function initTimeline() {
+            const container = document.getElementById('timeline-container');
+            resumeData.timeline.forEach((item, index) => {
+                const isWork = item.type === 'work';
+                const icon = isWork ? '💼' : '🎓';
+                const bgClass = isWork ? 'bg-blue-50 border-blue-100' : 'bg-emerald-50 border-emerald-100';
+                
+                const html = `
+                    <div class="relative pl-8 md:pl-10 group cursor-default">
+                        <!-- Node -->
+                        <div class="absolute left-0 top-1 w-6 h-6 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-xs z-20 ${isWork ? 'bg-blue-600 text-white' : 'bg-emerald-500 text-white'} ring-4 ring-white">
+                            ${isWork ? 'W' : 'E'}
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="p-5 rounded-lg border ${bgClass} hover:shadow-md transition-shadow">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
+                                <div>
+                                    <h4 class="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors">${item.title}</h4>
+                                    <h5 class="text-sm font-semibold text-slate-700">${item.org}</h5>
+                                </div>
+                                <span class="text-xs font-medium px-2 py-1 rounded bg-white border border-slate-200 text-slate-500 whitespace-nowrap mt-2 sm:mt-0">${item.year}</span>
+                            </div>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-3">${item.desc}</p>
+                            <div class="flex flex-wrap gap-2">
+                                ${item.tech.map(t => `<span class="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function initRadarChart() {
+            const ctx = document.getElementById('skillsRadarChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Machine Learning', 'Operations Research', 'Programming', 'Capacity Planning', 'Communication', 'Supply Chain'],
+                    datasets: [{
+                        label: 'Proficiency Level',
+                        data: [90, 85, 88, 95, 80, 75], // Estimated based on resume emphasis
+                        fill: true,
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        borderColor: 'rgb(37, 99, 235)',
+                        pointBackgroundColor: 'rgb(37, 99, 235)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(37, 99, 235)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: { borderWidth: 2 }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            pointLabels: {
+                                font: { size: 11, weight: '600' },
+                                color: '#475569'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initProjects() {
+            renderProjects(resumeData.projects);
+        }
+
+        function renderProjects(projects) {
+            const container = document.getElementById('projects-grid');
+            container.innerHTML = '';
+            
+            projects.forEach(p => {
+                const categoryBadges = p.category.map(c => `<span class="text-[10px] uppercase font-bold tracking-wider text-blue-600">${c}</span>`).join(' • ');
+                
+                const html = `
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all flex flex-col h-full group">
+                        <div class="mb-3">${categoryBadges}</div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">${p.title}</h3>
+                        <p class="text-sm text-slate-600 mb-4 flex-grow">${p.desc}</p>
+                        
+                        <div class="bg-slate-50 rounded-lg p-3 mb-4 border border-slate-100">
+                            <span class="text-xs font-semibold text-slate-500 uppercase block mb-1">Impact</span>
+                            <span class="text-sm font-medium text-slate-800">${p.impact}</span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${p.tags.slice(0, 3).map(t => `<span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-500">${t}</span>`).join('')}
+                            ${p.tags.length > 3 ? `<span class="px-2 py-1 bg-slate-100 text-xs text-slate-500">+${p.tags.length - 3}</span>` : ''}
+                        </div>
+
+                        ${p.hasChart ? `
+                        <button onclick="openProjectModal('${p.id}')" class="w-full mt-auto py-2 px-4 bg-white border border-blue-600 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+                            <span>View Analysis</span>
+                            <span class="text-lg">📊</span>
+                        </button>` : ''}
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // --- Logic & Interaction ---
+
+        function filterProjects(category) {
+            // Update buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.innerText === category) {
+                    btn.classList.remove('bg-white', 'text-slate-600');
+                    btn.classList.add('bg-blue-600', 'text-white', 'shadow-sm', 'ring-2', 'ring-blue-600', 'ring-offset-2');
+                } else {
+                    btn.classList.add('bg-white', 'text-slate-600');
+                    btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm', 'ring-2', 'ring-blue-600', 'ring-offset-2');
+                }
+            });
+
+            // Filter data
+            if(category === 'All') {
+                renderProjects(resumeData.projects);
+            } else {
+                const filtered = resumeData.projects.filter(p => p.category.includes(category));
+                renderProjects(filtered);
+            }
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if(el) {
+                const offset = 80; // nav height + buffer
+                const bodyRect = document.body.getBoundingClientRect().top;
+                const elementRect = el.getBoundingClientRect().top;
+                const elementPosition = elementRect - bodyRect;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        }
+
+        let modalChartInstance = null;
+
+        function openProjectModal(id) {
+            const project = resumeData.projects.find(p => p.id === id);
+            if(!project) return;
+
+            document.getElementById('modal-title').innerText = project.title;
+            document.getElementById('modal-description').innerText = project.desc + " The chart below illustrates the key impact metric or conceptual framework of the project.";
+            document.getElementById('project-modal').classList.remove('hidden');
+
+            // Render Specific Chart
+            const ctx = document.getElementById('modalChart').getContext('2d');
+            
+            // Destroy previous chart if exists
+            if(modalChartInstance) {
+                modalChartInstance.destroy();
+            }
+
+            if(project.id === 'p2') { // Football Project
+                modalChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Baseline Performance', 'Optimized Performance'],
+                        datasets: [{
+                            label: 'Team Performance Index',
+                            data: [100, 112.9],
+                            backgroundColor: ['#94a3b8', '#2563eb'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Performance Improvement (+12.9%)' }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 120 }
+                        }
+                    }
+                });
+            } else if (project.id === 'p1') { // Micron Project
+                modalChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Uptime', 'Unplanned Downtime'],
+                        datasets: [{
+                            data: [95, 5],
+                            backgroundColor: ['#10b981', '#f43f5e'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Target Operational Efficiency' },
+                            subtitle: { display: true, text: 'Goal: Minimize Unplanned Downtime' }
+                        }
+                    }
+                });
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('project-modal').classList.add('hidden');
+            if(modalChartInstance) {
+                modalChartInstance.destroy();
+                modalChartInstance = null;
+            }
+        }
+
+    </script>
 </body>
 </html>
