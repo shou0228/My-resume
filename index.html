@@ -474,10 +474,7 @@
                             <span class="text-sm font-medium text-slate-800">${p.impact}</span>
                         </div>
 
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            ${p.tags.slice(0, 3).map(t => `<span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-500">${t}</span>`).join('')}
-                            ${p.tags.length > 3 ? `<span class="px-2 py-1 bg-slate-100 text-xs text-slate-500">+${p.tags.length - 3}</span>` : ''}
-                        </div>
+                        <div class="flex flex-wrap gap-2 mb-4">${p.tags.slice(0, 3).map(t => `<span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-500">${t}</span>`).join('')}${p.tags.length > 3 ? `<span class="px-2 py-1 bg-slate-100 text-xs text-slate-500">+${p.tags.length - 3}</span>` : ''}</div>
 
                         ${p.hasChart ? `
                         <button onclick="openProjectModal('${p.id}')" class="w-full mt-auto py-2 px-4 bg-white border border-blue-600 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
